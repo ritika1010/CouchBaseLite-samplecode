@@ -1,5 +1,6 @@
 package com.example.democouchbase.MedicinePrescription;
 
+import android.app.LauncherActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,7 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,7 +36,8 @@ public class MainActivity2 extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
          databaseManagerMedicine.initCouchbaseLite(getApplicationContext());
         databaseManagerMedicine.openOrCreateDatabase(getApplicationContext());
-
+        databaseManagerMedicine.deleteDatabase();
+        databaseManagerMedicine.openOrCreateDatabase(getApplicationContext());
         et_medName = findViewById(R.id.et_medName);
         et_freq = findViewById(R.id.et_freq);
         et_pow = findViewById(R.id.et_power);
@@ -77,24 +80,16 @@ public class MainActivity2 extends AppCompatActivity {
     public void showFromDatabase() {
         Map<String, Object> med = databaseManagerMedicine.showDocument(docId);
 
-        JSONObject jsonObject = new JSONObject(med);
-        Log.e(TAG, "showFromDatabase--DATA:" + jsonObject);
-        textView.setText("--DATA:" + jsonObject);
+        Log.e(TAG, "showFromDatabase--DATA:" + med);
+        textView.setText("--DATA:" + med);
+        Log.e(TAG, "showFromDatabase: "+ med.get("medicines") );
 
-        try {
-
-            JSONObject j = jsonObject.getJSONObject("med1");
-            Log.e(TAG, "showFromDatabase:" + jsonObject.getString("med1"));
-            Log.e(TAG, "showFromDatabase:" + j.getString("name"));
-
-            JSONArray jsonArray = new JSONArray(Arrays.asList(med));
-            Log.e(TAG, "showFromDatabase--Array:" + jsonArray);
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        ArrayList<Map> arrayList= (ArrayList) med.get("medicines");
+        for(int i=0;i<arrayList.size();i++)
+        {
+            Log.e(TAG, "\narray"+i+arrayList.get(i).get("name") );
         }
 
     }
+
 }

@@ -10,7 +10,14 @@ import com.couchbase.lite.DatabaseConfiguration;
 import com.couchbase.lite.Document;
 import com.couchbase.lite.MutableDocument;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DatabaseManagerMedicine {
@@ -43,8 +50,6 @@ public class DatabaseManagerMedicine {
 
     public void openOrCreateDatabase(Context context) {
 
-
-
         DatabaseConfiguration config = new DatabaseConfiguration();
         try {
 
@@ -66,6 +71,8 @@ public class DatabaseManagerMedicine {
         med.put("frequency", m.getFrequency());
         med.put("power", m.getPower());
 
+
+
         try {
             Document document = null;
             if (database.getDocument(docId) != null) {
@@ -74,17 +81,29 @@ public class DatabaseManagerMedicine {
             // Update the document with more data
             Map<String, Object> updatedProperties = new HashMap<String, Object>();
 
+            JSONArray jsonArray=new JSONArray();
+            JSONObject jsonObject=new JSONObject();
+            ArrayList arrayList=new ArrayList();
+
             if (document != null) {
-                updatedProperties.putAll(document.toMap());
+                Map map=(document.toMap());
+                arrayList= (ArrayList) map.get("medicines");
             }
-            updatedProperties.put("med" + i, med);
+            jsonObject.put("med" + i, m);
+            jsonArray.put(jsonObject);
+
+            arrayList.add(med);
+
+            updatedProperties.put("medicines", arrayList);
+
+
             i++;
-            MutableDocument mutableDocument = new MutableDocument(docId, updatedProperties);
+            MutableDocument mutableDocument = new MutableDocument(docId,updatedProperties );
 
             database.save(mutableDocument);
             //   mutableDocument.toMap();
             // Save to the Couchbase local Couchbase Lite DB
-        } catch (CouchbaseLiteException e) {
+        } catch (CouchbaseLiteException | JSONException e) {
             Log.e(TAG, "Error putting", e);
         }
 
@@ -113,3 +132,16 @@ public class DatabaseManagerMedicine {
     }
 
 }
+
+
+//JSONArray jsonArray=new JSONArray();
+//arrayList=new ArrayList();
+//n=jsonArray.length();
+//for (int i=0;i<n;i++)
+//     arrayList.add(jsonArray.get(i));
+
+//ArrayList<ListItem> myCustomList = ArrayList<ListItem>();
+//JSONArray jsonArray = new JSONArray();
+//for (int i=0; i < myCustomList.size(); i++) {
+//        jsonArray.put(myCustomList.get(i).getJSONObject());
+//}
